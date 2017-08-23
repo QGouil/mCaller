@@ -1,4 +1,4 @@
-import cPickle
+import pickle
 import numpy as np
 from sklearn.model_selection import RandomizedSearchCV
 from sklearn.model_selection import GridSearchCV
@@ -70,17 +70,17 @@ def model_signal(signals,labels=None,train=False,groups=None,modelfile='mod.pkl'
         model.fit(signals,labels)
         scores = cross_val_score(model,signals,labels,cv=gfk,groups=groups)
         
-        print scores
+        print(scores)
         print("Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
    
         modfi = open(modelfile,'wb')
-        cPickle.dump(model,modfi)
+        pickle.dump(model,modfi)
         modfi.close()
         return model
 
     else:
         modfi = open(modelfile,'rb')
-        model = cPickle.load(modfi)
+        model = pickle.load(modfi)
         probabilities = model.predict_proba(signals)
         if labels: 
            sub_probabilities = {label:[] for label in set(labels)}

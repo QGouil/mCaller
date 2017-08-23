@@ -4,7 +4,7 @@
 
 from collections import defaultdict
 import numpy as np
-import cPickle 
+import pickle 
 import sys
 #import time
 import os

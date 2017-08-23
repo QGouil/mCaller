@@ -25,7 +25,7 @@ def aggregate_by_pos(meth_fi,aggfi,depth_thresh,mod_thresh,pos_list,control):
 
     if pos_list:
         pos_set = make_pos_set(pos_list)
-    #print pos_set
+    #print(pos_set)
 
     for line in open(meth_fi,'r'):
         try:
@@ -43,7 +43,7 @@ def aggregate_by_pos(meth_fi,aggfi,depth_thresh,mod_thresh,pos_list,control):
         except:
             pass
 
-        #print pos_dict
+        #print(pos_dict)
     count = 0
     outfi = open(aggfi,'w')
     for locus in pos_dict:
@@ -53,10 +53,10 @@ def aggregate_by_pos(meth_fi,aggfi,depth_thresh,mod_thresh,pos_list,control):
                 outfi.write('\t'.join(list(locus)[:-1]+[str(np.mean(pos_dict[locus]))]+[locus[-1]]+[str(len(pos_dict[locus]))])+'\n')
         else:
             if (locus[0],locus[1],locus[2],locus[4]) in pos_set and 'A' not in set(locus[4]): #TODO: fix main script for As 
-                #print locus[1],locus[4]
+                #print(locus[1],locus[4])
                 outfi.write('\t'.join(list(locus)[:-1]+[str(np.mean(pos_dict[locus]))]+[locus[-1]]+[str(len(pos_dict[locus]))])+'\n')#+[','.join([str(x) for x in pos_dict[locus]])]+'\n')
     if not pos_list:
-        print count, 'methylated loci found with min depth', depth_thresh, 'reads'
+        print(count, 'methylated loci found with min depth', depth_thresh, 'reads')
 
 def main():
     #parse command line options
@@ -71,7 +71,7 @@ def main():
     args = parser.parse_args()
 
     if args.version:
-        print 'mCallerNP 0.1'
+        print('mCallerNP 0.1')
         sys.exit(0)
 
     assert os.path.isfile(args.mCaller_file), 'file not found at '+args.mCaller_file
@@ -82,7 +82,7 @@ def main():
     else:
         output_file = args.mCaller_file.split('.')[0]+'.methylation.control.summary.bed'
 
-    print args.mCaller_file
+    print(args.mCaller_file)
 
     aggregate_by_pos(args.mCaller_file,output_file,args.min_read_depth,args.mod_threshold,args.positions,args.control)
 

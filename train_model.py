@@ -1,4 +1,4 @@
-import cPickle
+import pickle
 import numpy as np
 from sklearn.model_selection import RandomizedSearchCV
 from sklearn.model_selection import GridSearchCV
@@ -16,7 +16,7 @@ from sklearn.ensemble import GradientBoostingClassifier
 #make position to label dict for training
 def pos2label(positions):
    pos2label_dict = {(int(pos.split()[1])-1,pos.split()[2]):pos.split()[3] for pos in open(positions,'r').read().split('\n') if len(pos.split()) > 1}
-   print pos2label_dict
+   print(pos2label_dict)
    return pos2label_dict
 
 #to show best results of parameter grid search
@@ -71,13 +71,13 @@ def train_classifier(signals,labels,groups,modelfile,classifier='NN'): #TODO: se
    #model=None        
 
    scores = cross_val_score(model,signals,labels,cv=gfk,groups=groups)
-   print scores
+   print(scores)
    print("Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
 
    model.fit(signals,labels)
   
    modfi = open(modelfile,'wb')
-   cPickle.dump(model,modfi)
+   pickle.dump(model,modfi)
    modfi.close()
    return model
 

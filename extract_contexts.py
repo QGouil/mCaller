@@ -1,7 +1,7 @@
 from collections import defaultdict
 from Bio import SeqIO
 import numpy as np
-import cPickle 
+import pickle 
 import sys
 import re
 
@@ -49,25 +49,25 @@ def methylate_positions(ref_seq,positions,meth_base):
          count+=1
          #print meth_seq[pos-6:pos+5]
       else:
-         print count, meth_seq[pos-6:pos+5]
+         print(count, meth_seq[pos-6:pos+5])
          print 'bad methylation'
          sys.exit(0)
    return meth_seq
 
 #extract signals around methylated positions from tsv
 def methylate_references(ref_seq,base,motif=None,positions=None,train=False):
-   #print 'sequence length', len(ref_seq)
+   #print('sequence length', len(ref_seq))
    if motif:
       meth_fwd = methylate_motifs(ref_seq,motif,base)
       meth_rev = methylate_motifs(ref_seq,revcomp(motif),base_comps[base])
-      #print len(meth_fwd.split('M')),'Ms in methylated sequence'
+      #print(len(meth_fwd.split('M')),'Ms in methylated sequence')
    elif positions:
       fwd_pos = [int(pos.split()[1]) for pos in open(positions,'r').read().split('\n') if len(pos.split()) > 1 and pos.split()[2] == '+']
       rev_pos = [int(pos.split()[1]) for pos in open(positions,'r').read().split('\n') if len(pos.split()) > 1 and pos.split()[2] == '-']
       meth_fwd = methylate_positions(ref_seq,fwd_pos,base)
       meth_rev = methylate_positions(ref_seq,rev_pos,base_comps[base])
    else:  
-      print 'no motifs or positions specified'
+      print('no motifs or positions specified')
       sys.exit(0)
    return meth_fwd,meth_rev
 
@@ -94,7 +94,7 @@ def extract_features(tsv_input,fasta_input,read2qual,k,skip_thresh,qual_thresh,m
     if not train:
         tsv_output = '.'.join(tsv_input.split('.')[:-1])+'.diffs.'+str(k)
         modfi = open(modelfile,'rb')
-        model = cPickle.load(modfi)
+        model = pickle.load(modfi)
         modfi.close()
     else:
         tsv_output = '.'.join(tsv_input.split('.')[:-1])+'.diffs.'+str(k)+'.train'
@@ -113,13 +113,13 @@ def extract_features(tsv_input,fasta_input,read2qual,k,skip_thresh,qual_thresh,m
             linenum+=1
             chrom, read_pos, read_kmer, read_name, x, read_ind, event_current, event_sd, y, ref_kmer, model_current, ref_sd, z  = line.split('\t')
             if chrom != last_contig:
-                #print 'loading new contig',chrom
+                #print('loading new contig',chrom)
                 try:
                     meth_fwd,meth_rev = find_and_methylate(fasta_input,chrom,base,motif,positions_list)
-                    print 'finished loading.',len(meth_fwd.split('M')),'positions to examine' 
+                    print('finished loading.',len(meth_fwd.split('M')),'positions to examine' )
                     last_contig = chrom
                 except ValueError:
-                    print 'Error: could not find sequence for reference contig',chrom
+                    print('Error: could not find sequence for reference contig',chrom)
                     continue
             if read_name != last_read:
                 first_read_ind = int(read_ind) 
@@ -133,7 +133,7 @@ def extract_features(tsv_input,fasta_input,read2qual,k,skip_thresh,qual_thresh,m
                 meth_ref = meth_rev
             read_pos = int(read_pos)
             reference_kmer = meth_ref[read_pos:read_pos+k]
-            #print read_name,rev,ref_kmer,reference_kmer
+            #print(read_name,rev,ref_kmer,reference_kmer)
 
             #if finished context for previous potentially modified position, save and reset
             if mpos and ((read_pos >= mpos+1 and read_name == last_read) or (read_name != last_read)):
@@ -168,7 +168,7 @@ def extract_features(tsv_input,fasta_input,read2qual,k,skip_thresh,qual_thresh,m
                     pos_set.add(mpos)
                     read_set.add(last_read)
                     if len(read_set)%1000 == 0 and len(read_set) > last_read_num:
-                        print len(read_set), 'reads examined'
+                        print(len(read_set), 'reads examined')
                         last_read_num = len(read_set)
                 else:
                     skipped_skips.add((last_read,mpos))
@@ -190,10 +190,10 @@ def extract_features(tsv_input,fasta_input,read2qual,k,skip_thresh,qual_thresh,m
                     diff_col = diffs
                     if len(diff_col) != k:
                         try:
-                            print last_info
+                            print(last_info)
                         except:
                             pass
-                        print reference_kmer,mpos,read_pos,read_pos>mpos,read_name,last_read,diff_col,mspacing
+                        print(reference_kmer,mpos,read_pos,read_pos>mpos,read_name,last_read,diff_col,mspacing)
                         diff_col = [[] for i in range(k)]
                         #break
 
@@ -214,25 +214,25 @@ def extract_features(tsv_input,fasta_input,read2qual,k,skip_thresh,qual_thresh,m
                 try:
                     diff_col[pos_in_kmer].append(float(event_current)-float(model_current))
                 except IndexError:
-                    print diff_col, mpos, read_pos, reference_kmer, pos_in_kmer
+                    print(diff_col, mpos, read_pos, reference_kmer, pos_in_kmer)
                     diff_col = [[] for i in range(k)]
                     diff_col[pos_in_kmer].append(float(event_current)-float(model_current))
                     #break
                 last_pos = read_pos 
-                #print mpos, reference_kmer, read_pos, diff_col
+                #print(mpos, reference_kmer, read_pos, diff_col)
          
             elif mpos:
                 mpos = None
                 diff_col = [[] for i in range(k)]
 
-    print 'thread finished processing...'
-    print num_observations,'observations'
+    print('thread finished processing...')
+    print(num_observations,'observations')
     num_pos = len(pos_set)
-    print num_pos,'positions'
-    #cPickle.dump(diffs_by_read,open(tsv_input+'.pkl','wb'))
-    print len(multi_meth_pos_set),'regions with multiple methylated bases'
-    print len(w_skips), 'observations with skips included'
-    print len(skipped_skips), 'observations with too many skips'
+    print(num_pos,'positions')
+    #pickle.dump(diffs_by_read,open(tsv_input+'.pkl','wb'))
+    print(len(multi_meth_pos_set),'regions with multiple methylated bases')
+    print(len(w_skips), 'observations with skips included')
+    print(len(skipped_skips), 'observations with too many skips')
     if train:
         return signals, labels, contexts
 

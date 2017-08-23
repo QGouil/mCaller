@@ -24,7 +24,7 @@ def strand(rev):
 
 #find positions of motifs (eg. CG bases) in reference sequence and change to M
 def methylate_motifs(ref_seq,motif,meth_base,meth_position=None): #TODO: add option to specify which A in motif with multiple A's 
-   #print motif, meth_base, meth_position
+   #print(motif, meth_base, meth_position)
    if meth_position:
       meth_motif = motif[:meth_position]+'M'
       if meth_position < len(motif)-1:
@@ -34,7 +34,7 @@ def methylate_motifs(ref_seq,motif,meth_base,meth_position=None): #TODO: add opt
    meth_seq = ref_seq.replace(motif,meth_motif)
    #ref_motif_segs = ref_seq.split(motif)
    #meth_seq = meth_motif.join(ref_motif_segs)
-   #print len(meth_seq.split(meth_motif))-1, motif+' positions found'
+   #print(len(meth_seq.split(meth_motif))-1, motif+' positions found')
    return meth_seq
 
 #change specified positions to M in reference sequence
@@ -43,14 +43,14 @@ def methylate_positions(ref_seq,positions,meth_base):
    #print('next sequence')
    count = 0
    for pos in positions:
-      #print meth_seq[pos-6:pos+5]
+      #print(meth_seq[pos-6:pos+5])
       if meth_seq[pos-1] == meth_base:
          meth_seq = meth_seq[:pos-1]+'M'+meth_seq[pos:]
          count+=1
-         #print meth_seq[pos-6:pos+5]
+         #print(meth_seq[pos-6:pos+5])
       else:
          print(count, meth_seq[pos-6:pos+5])
-         print 'bad methylation'
+         print('bad methylation')
          sys.exit(0)
    return meth_seq
 
@@ -75,7 +75,7 @@ def find_and_methylate(refname,contigname,base,motif,positions_list):
     for ref in SeqIO.parse(refname,"fasta"):
         contigid = ref.id
         if contigid == contigname:
-            #print 'contig =',contigid
+            #print('contig =',contigid)
             meth_fwd,meth_rev = methylate_references(str(ref.seq).upper(),base,motif=motif,positions=positions_list)
             return meth_fwd,meth_rev
 

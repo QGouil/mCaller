@@ -94,7 +94,7 @@ def extract_features(tsv_input,fasta_input,read2qual,k,skip_thresh,qual_thresh,m
     if not train:
         tsv_output = '.'.join(tsv_input.split('.')[:-1])+'.diffs.'+str(k)
         modfi = open(modelfile,'rb')
-        model = pickle.load(modfi)
+        model = pickle.load(modfi, encoding='bytes')
         modfi.close()
     else:
         tsv_output = '.'.join(tsv_input.split('.')[:-1])+'.diffs.'+str(k)+'.train'
@@ -111,7 +111,7 @@ def extract_features(tsv_input,fasta_input,read2qual,k,skip_thresh,qual_thresh,m
             if endline and not mpos and linenum > endline:
                 break
             linenum+=1
-            chrom, read_pos, read_kmer, read_name, x, read_ind, event_current, event_sd, y, ref_kmer, model_current, ref_sd, z  = line.split('\t')
+            chrom, read_pos, read_kmer, read_name, x, read_ind, event_current, event_sd, y, ref_kmer, model_current, ref_sd, z, all_current_values  = line.split('\t')
             if chrom != last_contig:
                 #print('loading new contig',chrom)
                 try:

@@ -29,8 +29,8 @@ def distribute_threads(positions_list,motif,tsvname,read2qual,refname,num_refs,b
     except OSError:
        pass
 
-    print num_refs, 'contigs'
-    print nprocs, 'threads'
+    print(num_refs, 'contigs')
+    print(nprocs, 'threads')
 
     if nprocs > 1:
         nprocs_allocated = 0
@@ -42,7 +42,7 @@ def distribute_threads(positions_list,motif,tsvname,read2qual,refname,num_refs,b
             out_q.put(outtup)
         def countlines(filename,num_refs,contigid=None):
             if num_refs == 0: #TODO: remove this
-                print filename
+                print(filename)
                 return sum(1 for _ in open(filename))
             else:
                 contig_reached = False
@@ -60,7 +60,7 @@ def distribute_threads(positions_list,motif,tsvname,read2qual,refname,num_refs,b
     if nprocs == 1 or num_refs == 1:
         for ref in SeqIO.parse(refname,"fasta"):
             contigid = ref.id
-            print 'contig =',contigid,'- allocating',nprocs,'threads'
+            print('contig =',contigid,'- allocating',nprocs,'threads')
             meth_fwd,meth_rev = methylate_references(str(ref.seq).upper(),base,motif=motif,positions=positions_list)
             #sys.exit(0)
 
@@ -71,7 +71,7 @@ def distribute_threads(positions_list,motif,tsvname,read2qual,refname,num_refs,b
                     signal_mat, label_array, context_array = extract_features(tsvname,refname,read2qual,nvariables,skip_thresh,qual_thresh,modelfile,classifier,0,train=train,pos_label=training_pos_dict,chrom=contigid,meth_fwd=meth_fwd,meth_rev=meth_rev)
 
             else:
-                print tsvname
+                print(tsvname)
                 cstart, nlines = countlines(tsvname,num_refs,contigid) #TODO: split by reference sequence in or out of python? 
                 chunksize = int(math.ceil(nlines / float(nprocs)))
 
@@ -101,7 +101,7 @@ def distribute_threads(positions_list,motif,tsvname,read2qual,refname,num_refs,b
             context_array = []
             for i,proc in enumerate(procs):
                 tmp_signal_mat,tmp_label_array,tmp_contexts = out_q.get()
-                print 'updating with results from process',i
+                print('updating with results from process',i)
                 signal_mat.extend(tmp_signal_mat)
                 label_array.extend(tmp_label_array)
                 context_array.extend(tmp_contexts)
@@ -140,7 +140,7 @@ def main():
     args = parser.parse_args()
 
     if args.version:
-        print 'mCallerNP 0.1'
+        print('mCallerNP 0.1')
         sys.exit(0)
 
     if args.base == 'A':

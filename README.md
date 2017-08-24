@@ -94,16 +94,16 @@ graphmap align -r <reference>.fasta -d <filename>.fastq -o <filename>.sam
 samtools view -bS <filename>.sam | samtools sort -T /tmp/<filename>.sorted -o <filename>.sorted.bam 
 samtools index <filename>.sorted.bam 
 ``` 
-4. run nanopolish with the following command to save a tsv file and the event values scaled towards the model:
+3. run nanopolish with the following command to save a tsv file and the event values scaled towards the model:
 ``` 
 nanopolish eventalign -t <num_threads> --scale-events -n -r <filename>.fastq -b <filename>.sorted.bam -g <reference>.fasta > <filename>.eventalign.tsv
 ```
-5. run mCaller to detect m6A:
+4. run mCaller to detect m6A:
 ```
 mCaller_nanopolish.py <-m GATC or -p positions.txt> -r <reference>.fasta -e <filename>.eventalign.tsv -f <filename>.fastq -b A 
 ```
    This returns a tabbed file with chromosome, read name, genomic position, position k-mer context, features, strand, and label
-6. (optionally) run summary script to generate a bed file of methylated positions:
+5. (optionally) run summary script to generate a bed file of methylated positions:
 ```
 mod_by_position.py -f <filename>.eventalign.diffs.6 -d 15 -m 0.5 
 ```

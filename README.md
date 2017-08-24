@@ -22,6 +22,7 @@ other
 > - nanopore sequencing data (fastq format + fast5 to run nanopolish, basecalled using Albacore or another basecaller that saves event data)
 > - a tsv file with the signal realignment from nanopolish (https://github.com/jts/nanopolish)
 > - a reference sequence file (fasta)
+> - a file with the positions to evaluate
 
 ## Options
 ```
